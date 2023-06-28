@@ -3441,12 +3441,361 @@ public class UserController {
         return List.of(new User(1, "Subramanian"), new User(2, "Ram"));
     }
 }
+.....................................................................................
+			Sending Status Code
+....................................................................................
+
+HTTP operation Status:
+
+-> informational response - 100 to 199-1X
+-> success response -  200-299-2X
+-> Redirects  - 300-399 -3X
+-> client errors - 400-499 -4X
+-> server errrors - 500-599 - 5X
+
+Status Code : 100 to 500
+
+1XX Information Responses
+
+100 Continue
+101 Switching Protocols
+102 Processing
+103 Early Hints
+
+2XX Success
+
+200 OK
+201 Created
+202 Accepted
+203 Non-Authoritative Information
+204 No Content
+205 Reset Content
+206 Partial Content
+207 Multi-Status
+208 Already Reported
+226 IM Used
+
+3XX Redirection
+300 Multiple Choices
+301 Moved Permanently
+302 Found
+303 See Other
+304 Not Modified
+305 Use Proxy
+306 Switch Proxy
+307 Temporary Redirect
+308 Permanent Redirect
+
+4XX Client errors
+
+400 Bad Request
+401 Unauthorized
+402 Payment Required
+403 Forbidden
+404 Not Found
+405 Method Not Allowed
+406 Not Acceptable
+407 Proxy Authentication Required
+408 Request Timeout
+409 Conflict
+410 Gone
+411 Length Required
+412 Precondition Failed
+413 Payload Too Large
+414 URI Too Long
+415 Unsupported Media Type
+416 Range Not Satisfiable
+417 Expectation Failed
+418 I'm a teapot
+420 Method Failure
+421 Misdirected Request
+422 Unprocessable Entity
+423 Locked
+424 Failed Dependency
+426 Upgrade Required
+428 Precondition Required
+429 Too Many Requests
+431 Request Header Fields Too Large
+451 Unavailable For Legal Reasons
+
+5XX Server errors
+500 Internal Server error
+501 Not Implemented
+502 Bad Gateway
+503 Service Unavailable
+504 gateway Timeout
+505 Http version not supported
+506 Varient Also negotiate
+507 Insufficient Storage
+508 Loop Detected
+510 Not Extended
+511 Network Authentication Required
+
+ "By default spring sends 200 status for all success request and response."
+
+What if i want to send some special status code?
+
+According to Rest , Post method must return 201.
+
+How to add StatusCode in the Response?
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public String save(){
+        return "Saved";
+    }
+
+What if i dont send any content? - 204-NotContent
+   
+    @GetMapping("/process")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public  void process(){
+        System.out.println("Processed");
+    }
+.....................................................................................
+		Sending Payload,StatusCode,Custom Http /or Built in HttpHeader
+.....................................................................................
+
+ResponseEntity:
+  It is Type which is returned by api
+
+You can encapulsate  payload,status code,Headers.
+
+ResponseEntity Object has been desinged based "commandChain or builder Pattern"
+
+  The builder pattern is nothing but object methods return the same object and you start chain until full object is constructed.
+
+   @GetMapping("/listresponse")
+    public ResponseEntity<List<User>> listResponse() {
+        List<User> users = List.of(new User(1, "Subramanian"), new User(2, "Ram"));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .header("secrete", "foobar")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(users);
+    }
+.....................................................................................
+			API Args
+.....................................................................................
+Client can send data to REST API.
+
+Data can be sent in two ways 
+1.via parameters
+2.via payload
+
+1.Parameters : According to REST specfication
+   -Path Parameters
+   -Query Parameters
+   -Matrix Parameters
+   -Form Parameters
+2.Payload
+   -Any thing(data) can be embeded into HTTP body and sent to Server
+
+HTTP Request Structure:
+......................
+Request contains two segments
+
+1.Request Headers
+   We pass Request Headers
+2.Request Body 
+    We pass data 
+
+Parmeters vs Payload:
+.....................
+Parameters and payload both are used to send data to server .
+
+Parameters send data via "URL" /as part of the URL....
+
+http://www.example.com/api/users/23
+http://www.example.com/api/products?sorting=asyn
+
+here 23 and sorting=asyn are data
+
+Payload is used to send data as part of Request body which is hidden from the user, we cant see.
+
+Suppose if i want send "Customer information,Product Information" as json
+
+...................................................................................
+			Sending data via URL - Path Parameter
+...................................................................................
+Path Parameters are used to get information based on input - Dynamic URLS
+
+Path Parameters Synatx:
+
+  -Query Information based on dynamic input called path
+
+   /api/resource/{placeholder}
+   /api/orders/1
+   /api/orders/2
+
+GET http://example.com/api/users/1
+
+package com.ibm.app.resources;
+
+import com.ibm.app.resources.entity.User;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/users")
+public class UserController {
+
+    //@GetMapping(produces = {"application/json"})
+    @GetMapping
+    public User findAll() {
+        return new User(1, "Subramanian");
+    }
+
+    // /api/users/1
+    @GetMapping(value = "/{id}")
+    public String findById(@PathVariable("id") String id) {
+        return id + "details";
+    }
+
+    //How to send list of Users
+    @GetMapping("/list")
+    public List<User> list() {
+        return List.of(new User(1, "Subramanian"), new User(2, "Ram"));
+    }
+
+    @GetMapping("/listresponse")
+    public ResponseEntity<List<User>> listResponse() {
+        List<User> users = List.of(new User(1, "Subramanian"), new User(2, "Ram"));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .header("secrete", "foobar")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(users);
+    }
 
 
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public String save() {
+        return "Saved";
+    }
+
+    @GetMapping("/process")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void process() {
+        System.out.println("Processed");
+    }
+
+}
+
+Testing:
+http://localhost:8080/api/users/4
+.....................................................................................
+		QueryParam /Query Strings/ Request Parameters
+.....................................................................................
+
+Syntax:
+http://www.example.com/api/products?sorting=asyn&filter=city
 
 
+  //http://localhost:8080/api/users/filter?ranking=Premium
+
+    @GetMapping(value = "/filter")
+    public String filter(@RequestParam("ranking") String ranking) {
+        return ranking;
+    }
+...................................................................................
+			 Sending Payload to Server
+...................................................................................
+
+What if i want to send user json?
+
+{
+    "id": 1,
+    "name": "Subramanian"
+}
+We have to send via Payload.
+
+How to receive Payload in the server?
+  @RequestBody
 
 
+   @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public String save(@RequestBody User user) {
+        System.out.println(user);
+        return "Saved";
+    }
+
+PostMan:
+POST http://localhost:8080/api/users
+
+{
+    "id": 2,
+    "name": "John"
+}
+package com.ibm.app.resources;
+
+import com.ibm.app.resources.entity.User;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/users")
+public class UserController {
+
+    //@GetMapping(produces = {"application/json"})
+    @GetMapping
+    public User findAll() {
+        return new User(1, "Subramanian");
+    }
+
+    // /api/users/1
+    @GetMapping(value = "/{id}")
+    public String findById(@PathVariable("id") String id) {
+        return id + "details";
+    }
+
+    @GetMapping(value = "/filter")
+    public String filter(@RequestParam("ranking") String ranking) {
+        return ranking;
+    }
+
+    //How to send list of Users
+    @GetMapping("/list")
+    public List<User> list() {
+        return List.of(new User(1, "Subramanian"), new User(2, "Ram"));
+    }
+
+    @GetMapping("/listresponse")
+    public ResponseEntity<List<User>> listResponse() {
+        List<User> users = List.of(new User(1, "Subramanian"), new User(2, "Ram"));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .header("secrete", "foobar")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(users);
+    }
+
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public String save(@RequestBody User user) {
+        System.out.println(user);
+        return "Saved";
+    }
+
+    @GetMapping("/process")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void process() {
+        System.out.println("Processed");
+    }
+
+}
+.....................................................................................
 
 
 
