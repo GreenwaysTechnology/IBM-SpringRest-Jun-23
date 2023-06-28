@@ -3295,6 +3295,152 @@ public class CustomerController {
 }
 .....................................................................................
 
+URL Mapping on the top of api:
+.............................
+package com.ibm.app.resources;
+
+
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/customers")
+public class CustomerController {
+    //apis
+    //readAll
+    @GetMapping
+    public String findAll() {
+        return "Customers";
+    }
+
+    //Sub URL
+    @GetMapping("/list")
+//    @RequestMapping("/list")
+    public String list(){
+        return "Customer list";
+    }
+
+
+    @PostMapping
+    //save
+    public String save() {
+        return "Save";
+    }
+
+    @PutMapping
+    //update
+    public String update() {
+        return "update";
+    }
+
+    @DeleteMapping
+    //remove
+    public String remove() {
+        return "Delete";
+    }
+}
+....................................................................................
+				API structure
+...................................................................................
+
+api is just method.
+any method which may take arg and also it may return values.
+
+public String findAll() {
+        return "Customers";
+}
+
+Return Value:Reponse Types
+1.String
+2.Object - Plain Domain Object or Collection like List or Set or Array
+3.ResponseEntity
+4.void
+
+Response:
+  The Response nothing but the output of the api which is sent over http protocal.
+
+Response Contains two things
+
+1.Payload - Data which is returned
+2.Meta Data(Headers)
+   Headers are just variables which hold some values which describe the nature of response.
+
+Response Headers
+................
+1.Content-Type
+
+Content-Type: text/html; charset=utf-8
+
+The MIME type of this content. What type of data server is sending to client.
+
+Basic content type of web is:
+  HTML
+  Plain/text
+Rest content type is :
+  
+  Representational State Transfer
+      |             |
+   Data Format     Data
+      |
+json
+xml
+pdf
+word
+etc...
+
+By Default in REST is "json"
+
+2.Content-Length
+
+Content-Length: 348
+
+The length of the response body expressed in 8-bit bytes
+
+
+3.Date
+Date: Tue, 15 Nov 1994 08:12:31 GMT
+
+The date and time that the message was sent (in “HTTP-date” format as defined by RFC 7231)
+
+4.keep-alive
+  It is header which talks how long the http connection can exits between server and client default is 60ms
+
+5.Connection
+Connection: close
+
+Control options for the current connection and list of hop-by-hop response fields. Deprecated in HTTP/2
+
+.....................................................................................
+				JSON as Representation
+.....................................................................................
+
+How Can Spring send Json?
+Spring uses JSON converter to convert any object/collection/array into json automatically.
+
+package com.ibm.app.resources;
+
+import com.ibm.app.resources.entity.User;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/users")
+public class UserController {
+
+    //@GetMapping(produces = {"application/json"})
+    @GetMapping
+    public User findAll() {
+        return new User(1, "Subramanian");
+    }
+
+    //How to send list of Users
+    @GetMapping("/list")
+    public List<User> list() {
+        return List.of(new User(1, "Subramanian"), new User(2, "Ram"));
+    }
+}
 
 
 

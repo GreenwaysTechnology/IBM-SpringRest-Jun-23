@@ -1,17 +1,28 @@
 package com.ibm.app.resources;
 
 
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+
+import java.awt.*;
 
 @RestController
 @RequestMapping("/api/customers")
 public class CustomerController {
     //apis
     //readAll
-    @GetMapping
+    @GetMapping(produces = {"application/json"})
     public String findAll() {
         return "Customers";
     }
+
+    //Sub URL
+    @GetMapping("/list")
+//    @RequestMapping("/list")
+    public String list() {
+        return "Customer list";
+    }
+
 
     @PostMapping
     //save
