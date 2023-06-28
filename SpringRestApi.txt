@@ -2893,8 +2893,7 @@ main method
 
 
 
-...................................................................................................
-					@SpringBootApplication
+......................................................................................			@SpringBootApplication
 ....................................................................................................
 
 
@@ -3130,9 +3129,171 @@ pom.xml
 			<scope>test</scope>
 		</dependency>
 
+.....................................................................................
+
+Steps to Design Rest api:
+.........................
+
+API means the program which has biz functionality.
+
+According to REST Principle;
+
+ The Biz or domain functionality must be exposed as Resource.
+
+Resource:
+ It could be any thing which is accessiable via URL/URI.
+In general biz systems has collection of Objects like Product,Customer,Account...
+Every Object is called Resource.
+
+In Spring How to expose Resource?
+
+Controller.
+
+What is controller?
+ Controller is simple java class which is annotated by "@RestController"
+
+package com.ibm.app.resources;
+
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class CustomerController {
+    //apis
+    public String findAll() {
+        return "Customers";
+    }
+
+}
+
+How to identify the controller/Resource by clients?
+
+Using URI.
+@RequestMapping annotation is used to map resources by URI.
+package com.ibm.app.resources;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/customers")
+public class CustomerController {
+    //apis
+    public String findAll() {
+        return "Customers";
+    }
+
+}
+
+API Representation. How to access?
+
+Any biz system we have many operations
+
+CURD operations:
+
+1.CREATE
+2.SELECT
+3.UPDATE
+4.DELETE
+
+IN http CURD operations are mapped by the following verbs
+
+1.GET - SELECT-READ
+2.POST - CREATE-INSERT
+3.PUT  - UPDATE
+4.DELETE - REMOVE
+
+Annotations to map the http VERBS
+
+1.GET - @GetMapping
+2.POST - @PostMapping
+3.PUT  - @PutMapping
+4.DELETE - @DeleteMapping
+
+package com.ibm.app.resources;
 
 
+import org.springframework.web.bind.annotation.*;
 
+@RestController
+@RequestMapping("/api/customers")
+public class CustomerController {
+    //apis
+    //readAll
+    @GetMapping
+    public String findAll() {
+        return "Customers";
+    }
+
+    @PostMapping
+    //save
+    public String save() {
+        return "Save";
+    }
+
+    @PutMapping
+    //update
+    public String update() {
+        return "update";
+    }
+
+    @DeleteMapping
+    //remove
+    public String remove() {
+        return "Delete";
+    }
+}
+
+Client:
+  Client is just another program.
+
+Generally java script can be client program- browser based apps
+Java itself can be client program
+Any other programming language can also be client program.
+
+In dev env, dev test Rest api using tools like
+
+PostMan
+CURL
+
+Request Format:
+
+GET /api/customers
+
+
+package com.ibm.app.resources;
+
+
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/customers")
+public class CustomerController {
+    //apis
+    //readAll
+    @GetMapping
+    public String findAll() {
+        return "Customers";
+    }
+
+    @PostMapping
+    //save
+    public String save() {
+        return "Save";
+    }
+
+    @PutMapping
+    //update
+    public String update() {
+        return "update";
+    }
+
+    @DeleteMapping
+    //remove
+    public String remove() {
+        return "Delete";
+    }
+}
+.....................................................................................
 
 
 
